@@ -5,18 +5,7 @@ output:
     keep_md: true
 ---
 
-```{r setup, include = FALSE}
 
-# Install/load packages
-
-  library(tidyverse)
-  library(pander)
-
-# Set our seed so we can replicate random numbers
-
-  set.seed(1209)
-
-```
 
 ## Estimands, estimators, and estimates
 
@@ -32,40 +21,56 @@ Estimate - The actual value that arrises from our estimator.
 
 To demonstrate this, first we can simulate a large number of SBP measurements from a normal distribution with a known mean and standard deviation. 
 
-```{r simulate_population}
 
+```r
 # First we will simulate our population
 
   pop_sbp <- rnorm(1e7, 124.5, 18.0)
 
   hist(pop_sbp)
-  
-  pander(summary(pop_sbp))
-
 ```
+
+![](Frequentist_inference_files/figure-html/simulate_population-1.png)<!-- -->
+
+```r
+  pander(summary(pop_sbp))
+```
+
+
+----------------------------------------------------
+ Min.    1st Qu.   Median   Mean    3rd Qu.   Max.  
+------- --------- -------- ------- --------- -------
+ 28.42    112.4    124.5    124.5    136.6    216.3 
+----------------------------------------------------
 
 Next, we draw a random sample from this population, and calcuate the mean. This is our **estimator** of the population mean. 
 
-```{r sample_1}
 
+```r
   sample_sbp <- sample(pop_sbp, 50, replace = FALSE)
 
   mean(sample_sbp)
+```
 
+```
+## [1] 122.8668
 ```
 
 We can immediately see that the sample mean is close to, but not exactly, the population mean. Importantly, if we were to repeat the process using the same **estimator**, we would expect a different **estimate**. 
 
-```{r sample_2}
 
+```r
   mean(sample(pop_sbp, 50, replace = FALSE))
+```
 
+```
+## [1] 124.215
 ```
 
 So what happens if we repeat this process many times? We get a **sampling distribtion** of sample means. This concept of a sampling distribution is criticl to understanding frequentist statistical inferece that is used to interpret the results of most clinical trials. 
 
-```{r sample_10k}
 
+```r
   rep_means <- function(pop, n, ...){
     mean(sample(pop, n, replace = FALSE))
   }
@@ -73,11 +78,20 @@ So what happens if we repeat this process many times? We get a **sampling distri
   many_sample_means <- replicate(100, rep_means(pop_sbp, 100))
 
   hist(many_sample_means)
-  
-  pander(summary(many_sample_means))
-    
-
 ```
+
+![](Frequentist_inference_files/figure-html/sample_10k-1.png)<!-- -->
+
+```r
+  pander(summary(many_sample_means))
+```
+
+
+----------------------------------------------------
+ Min.    1st Qu.   Median   Mean    3rd Qu.   Max.  
+------- --------- -------- ------- --------- -------
+ 120.3    123.4    124.6    124.6     126     128.9 
+----------------------------------------------------
 
 
 
