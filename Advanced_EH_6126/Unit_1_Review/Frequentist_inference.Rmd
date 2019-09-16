@@ -11,6 +11,7 @@ output:
 
   library(tidyverse)
   library(pander)
+  library(knitr)
 
 # Set our seed so we can replicate random numbers
 
@@ -40,7 +41,7 @@ To demonstrate this, first we can simulate a large number of SBP measurements fr
 
   hist(pop_sbp)
   
-  pander(summary(pop_sbp))
+  summary(pop_sbp)
 
 ```
 
@@ -74,7 +75,7 @@ So what happens if we repeat this process many times? We get a **sampling distri
 
   hist(many_sample_means)
   
-  pander(summary(many_sample_means))
+  summary(many_sample_means)
     
 
 ```

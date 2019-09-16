@@ -33,15 +33,13 @@ To demonstrate this, first we can simulate a large number of SBP measurements fr
 ![](Frequentist_inference_files/figure-html/simulate_population-1.png)<!-- -->
 
 ```r
-  pander(summary(pop_sbp))
+  summary(pop_sbp)
 ```
 
-
-----------------------------------------------------
- Min.    1st Qu.   Median   Mean    3rd Qu.   Max.  
-------- --------- -------- ------- --------- -------
- 28.42    112.4    124.5    124.5    136.6    216.3 
-----------------------------------------------------
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   28.42  112.36  124.50  124.51  136.65  216.28
+```
 
 Next, we draw a random sample from this population, and calcuate the mean. This is our **estimator** of the population mean. 
 
@@ -83,15 +81,13 @@ So what happens if we repeat this process many times? We get a **sampling distri
 ![](Frequentist_inference_files/figure-html/sample_10k-1.png)<!-- -->
 
 ```r
-  pander(summary(many_sample_means))
+  summary(many_sample_means)
 ```
 
-
-----------------------------------------------------
- Min.    1st Qu.   Median   Mean    3rd Qu.   Max.  
-------- --------- -------- ------- --------- -------
- 120.3    123.4    124.6    124.6     126     128.9 
-----------------------------------------------------
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   120.3   123.4   124.6   124.6   126.0   128.9
+```
 
 
 
