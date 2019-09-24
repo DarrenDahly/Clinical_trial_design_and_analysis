@@ -1,0 +1,253 @@
+---
+title: "Equivalance Trials"
+output: 
+  html_document:
+    keep_md: true
+---
+
+```{r setup, include = FALSE}
+
+# Install/load packages
+
+  packs <- c("tidyverse", "pander", "knitr", "viridis", "broom")
+  install.packages(packs[!packs %in% installed.packages()])
+  lapply(packs, library, character.only = TRUE)
+
+```
+
+
+# Superiority example
+```{r}
+
+  set.seed(0236)
+
+# Simulate some study data into a dataframe
+  study_df <- data_frame(
+    y = c(rnorm(200, 124.5, 18.0),                # Control arm outcomes
+          rnorm(200, 124.5, 18.0) + 3),           # Active arm outcomes
+    arm = rep(c("Control", "Active"), each = 200) # Arm labels
+  ) %>%
+    mutate(arm = factor(arm, levels = c("Control", "Active")))
+
+  model1 <- lm(y ~ arm, data = study_df)
+
+  pander(model1)
+
+```
+
+
+```{r}
+
+  tidy(model1) %>%
+  filter(term == "armActive") %>%
+  mutate(ul = estimate + 1.96 * std.error, ll = estimate - 1.96 * std.error) %>%
+  ggplot(aes(y = estimate, ymin = ll, ymax = ul, x = 0)) +
+    geom_pointrange(size = 2) +
+    theme_minimal() +
+    coord_flip() +
+    xlab("") +
+    geom_hline(yintercept = 0, color = "red", linetype = "dashed") +
+    ylab("Estimated mean difference (active vs control) and 95% CI (mmHg SBP)") +
+    theme(axis.text.y = element_blank(), 
+          axis.ticks.y = element_blank()) +
+    ggtitle(paste0("P = ", signif(tidy(model1)$p.value[2], 2), "; n = 400"))
+
+  ggsave("C:/Users/Darren/Desktop/basic_ci.png", height = 19.05, width = 33.86,
+	         units = "cm", scale = 0.5)
+
+```
+
+```{r}
+
+  study_df_small <- bind_rows(
+    sample_n(filter(study_df, arm ==  "Active"), size = 50), 
+    sample_n(filter(study_df, arm == "Control"), size = 50)
+  )
+
+  model2 <- lm(y ~ arm, data = study_df_small)
+
+  pander(model2)
+  
+```
+
+```{r}
+
+  tidy(model2) %>%
+  filter(term == "armActive") %>%
+  mutate(ul = estimate + 1.96 * std.error, ll = estimate - 1.96 * std.error) %>%
+  ggplot(aes(y = estimate, ymin = ll, ymax = ul, x = 0)) +
+    geom_pointrange(size = 2) +
+    theme_minimal() +
+    coord_flip() +
+    xlab("") +
+    geom_hline(yintercept = 0, color = "red", linetype = "dashed") +
+    ylab("Estimated mean difference (active vs control) and 95% CI (mmHg SBP)") +
+    theme(axis.text.y = element_blank(), 
+          axis.ticks.y = element_blank()) +
+    ggtitle(paste0("P = ", signif(tidy(model2)$p.value[2], 2), "; n = 100"))
+
+  ggsave("C:/Users/Darren/Desktop/basic_ci_small_n.png", 
+         height = 19.05, width = 33.86, units = "cm", scale = 0.5)
+
+
+```
+
+
+
+```{r}
+# Get the expected sampling distibution under a null hypotheis of no difference
+  
+  g1 <- ggplot(data_frame(x = c(-4 , 4)), aes(x = x)) + 
+          stat_function(fun = dnorm, args = list(0, 1), 
+                        geom = "area", fill = viridis(1), alpha = 0.3) +
+          xlim(c(-4 , 4)) +
+          xlab("Z") +
+          ylab("Density") +
+          theme_minimal()
+
+  g1
+
+```
+
+
+```{r}
+
+    g2 <- g1 +
+      stat_function(xlim = c(1.96 , 4), 
+                    fun = dnorm, args = list(0, 1), 
+                    geom = "area", fill = viridis(1)) +
+      stat_function(xlim = c(-4, -1.96), 
+                    fun = dnorm, args = list(0, 1), 
+                    geom = "area", fill = viridis(1)) +
+      ggtitle("The proportion of the total area in the darker part of the distribution\n for Z is 0.05")
+
+  g2
+
+```
+
+
+```{r}
+
+  g4 <- g3 +
+    geom_segment(x = -1.96, xend = 1.96, y = dnorm(-1.96), yend = dnorm(-1.96)) +
+    geom_point(x = 0, y = dnorm(-1.96), size = 3)   
+
+  g4
+
+```
+
+```{r}
+
+  g1 <- ggplot(data_frame(x = c(-4 , 6)), aes(x = x)) + 
+          stat_function(fun = dnorm, args = list(2.1, 1), 
+                        geom = "area", fill = viridis(1), alpha = 0.3) +
+          stat_function(fun = dnorm, args = list(0, 1), 
+                        geom = "area", fill = viridis(1, end = 0.7), 
+                        alpha = 0.1) +
+          xlim(c(-4 , 6)) +
+          xlab("Z") +
+          ylab("Density") +
+          theme_minimal() +
+      stat_function(xlim = c(1.96 + 2.1 , 6), 
+                    fun = dnorm, args = list(2.1, 1), 
+                    geom = "area", fill = viridis(1)) +
+      stat_function(xlim = c(-4, -1.96 + 2.1), 
+                    fun = dnorm, args = list(2.1, 1), 
+                    geom = "area", fill = viridis(1))  +
+    geom_segment(x = -1.96 + 2.1, xend = 1.96 + 2.1, y = dnorm(-1.96), yend = dnorm(-1.96)) +
+    geom_point(x = 2.1, y = dnorm(-1.96), size = 3) +
+    geom_vline(xintercept = 0, color = "red", linetype = "dashed", size = 1)
+
+
+  g1
+
+```
+
+
+```{r}
+
+  g1 <- ggplot(data_frame(x = c(-6 , 6)), aes(x = x)) + 
+          stat_function(fun = dnorm, args = list(1, 1), 
+                        geom = "area", fill = viridis(1), alpha = 0.3) +
+          xlim(c(-6 , 6)) +
+          xlab("Z") +
+          ylab("Density") +
+          theme_minimal() +
+      stat_function(xlim = c(-6, -1.96 + 1), 
+                    fun = dnorm, args = list(1, 1), 
+                    geom = "area", fill = viridis(1)) +
+    geom_vline(xintercept = 1, color = "red", linetype = "dashed", size = 1) +
+    ggtitle("Null Hypothesis: Z >= 1; Alternative: Z < 1 (one sided, 97.5% CI)")
+
+
+  g1
+
+```
+
+```{r}
+
+  mar <- 3
+
+  g1 <- ggplot(data_frame(x = c(-6 , 6)), aes(x = x)) + 
+          stat_function(fun = dnorm, args = list(-margin, 1), 
+                        geom = "area", fill = viridis(1), alpha = 0.3) +
+          xlim(c(-6 , 6)) +
+          xlab("Z") +
+          ylab("Density") +
+          theme_minimal() +
+      stat_function(xlim = c(1.96 - 1, 6), 
+                    fun = dnorm, args = list(-margin, 1), 
+                    geom = "area", fill = viridis(1))  +
+    geom_segment(x = 1.96 -1, xend = Inf, y = dnorm(-2),
+                 yend = dnorm(-2), 
+                 arrow = arrow(length = unit(0.5,"cm"), type = "closed")) +
+    geom_vline(xintercept = -1, color = "red", linetype = "dashed", size = 1)  +
+    ggtitle("Null Hypothesis: Z <= -1; Alernative: > -1 (one sided, 97.5% CI)")
+
+
+  g1
+
+```
+
+```{r}
+
+  g1 <- ggplot(data_frame(x = c(-6 , 6)), aes(x = x)) + 
+          stat_function(fun = dnorm, args = list(1, 1), 
+                        geom = "area", fill = viridis(1), alpha = 0.3) +
+          stat_function(fun = dnorm, args = list(-1, 1), 
+                        geom = "area", fill = viridis(1), alpha = 0.3) +
+          xlim(c(-6 , 6)) +
+          xlab("Z") +
+          ylab("Density") +
+          theme_minimal() +
+      stat_function(xlim = c(1.96 + 1 , 6), 
+                    fun = dnorm, args = list(1, 1), 
+                    geom = "area", fill = viridis(1)) +
+      stat_function(xlim = c(-6, -1.96 -1), 
+                    fun = dnorm, args = list(-1, 1), 
+                    geom = "area", fill = viridis(1))  +
+    geom_segment(x = 1.96 + 1, xend = -Inf, y = dnorm(-1.96),
+                 yend = dnorm(-1.96), 
+                 arrow = arrow(length = unit(0.5,"cm"), type = "closed")) +
+    geom_segment(x = -1.96 + -1, xend = Inf, y = dnorm(-2),
+                 yend = dnorm(-2), 
+                 arrow = arrow(length = unit(0.5,"cm"), type = "closed")) +
+    geom_vline(xintercept = 1, color = "red", linetype = "dashed", size = 1) +
+    geom_vline(xintercept = -1, color = "red", linetype = "dashed", size = 1) +
+    ggtitle("Two one-sided tests (equivalent to a two-sided 95% CI)")
+
+
+  g1
+
+```
+
+```{r}
+  g1 +
+    geom_segment(x = -1.96 + -1, xend = 1.96 + 1, y = dnorm(-1.5),
+                 yend = dnorm(-1.5)) +
+    geom_point(x = 0, y = dnorm(-1.5), size = 3)
+  
+```
+
+
+ g1
