@@ -250,4 +250,23 @@ output:
 ```
 
 
- g1
+## Biocreep
+
+```{r}
+
+  data_frame(effect = c(3, 2.5, 2.0, 1.5, 1.0), 
+             ul = effect + 0.6, 
+             ll = effect - 0.6, 
+             tx = letters[1:5]) %>%
+  ggplot(aes(x = tx, y = effect, ymax = ul, ymin = ll, color = tx)) +
+    geom_pointrange(size = 2) +
+    scale_color_viridis(discrete = TRUE) +
+    coord_flip() +
+    xlab("Treatment effect vs previous comparator") +
+    ylab("Effect estimate (95% CI)") +
+    theme_minimal() 
+    
+
+```
+
+
