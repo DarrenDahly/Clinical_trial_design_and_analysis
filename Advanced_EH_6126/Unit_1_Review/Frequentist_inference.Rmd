@@ -218,7 +218,7 @@ Now this was a fair bit of work just to do a simple t-test. So now let's R do th
 
   t_1 <- t.test(y ~ arm, data = study_df)
 
-  summary(t_1)
+  t_1
 
 ```
 
