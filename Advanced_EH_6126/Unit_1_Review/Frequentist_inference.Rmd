@@ -11,7 +11,7 @@ output:
 
 # Install/load packages
 
-  packs <- c("tidyverse", "pander", "knitr", "viridis", "broom", "pwr")
+  packs <- c("tidyverse", "knitr", "viridis", "broom", "pwr")
   install.packages(packs[!packs %in% installed.packages()])
   lapply(packs, library, character.only = TRUE)
 
@@ -193,9 +193,9 @@ This means that **IF** there was no treatment effect, **AND** the assumptions un
 
 So what can we do with this p-value? That's where things start to get tricky. At the risk of over-simplifying things, Fisher saw the p-value as a continuous measure of how surprised we should be if the data were truly generated under a mechanism of "no effect". So then a small p-value indicates there might be an effect worth further exploring or looking for in continued experiments. Then, if you were able able to repeat an experiment several times and consistently produce a small p-value, you might finally conclude that your intervention "works". 
 
-Others would use the p-value as a hypothesis test. In the example above, it would be the null hypothesis of $t \le 0$ vs the alternative of $t > 0$. Then you would set some threshold for p (e.g. 5%) for which you would "reject the null". We'll come back to this way of thinking when we discuss power, and type 1 and 2 errors below.    
+Others would use the p-value as a hypothesis test. In the example above, it would be the null hypothesis of t ≤ 0 vs the alternative of t > 0. Then you would set some threshold for p (e.g. 5%) for which you would "reject the null". We'll come back to this way of thinking when we discuss power, and type 1 and 2 errors below.    
 
-In the example above, we only considered our estimate of t with respect to one tail of the sampling distribution of t under the null. This is what we refer to as a one-sided test. However, it usually makes more sense to make it relative to both tails, so that the null is $t = 0$ vs. $t < 0$ or $t > 0$. 
+In the example above, we only considered our estimate of t with respect to one tail of the sampling distribution of t under the null. This is what we refer to as a one-sided test. However, it usually makes more sense to make it relative to both tails, so that the null is t = 0 vs. t < 0 or t > 0. 
 
 ```{r t_two_sidedd}
 
@@ -218,7 +218,7 @@ Now this was a fair bit of work just to do a simple t-test. So now let's R do th
 
   t_1 <- t.test(y ~ arm, data = study_df)
 
-  pander(t_1)
+  summary(t_1)
 
 ```
 
@@ -234,7 +234,7 @@ For example, the t-test is used when we are interested in a difference in means 
 
   pvalue <- filter(tidy(lm_1), term == "armActive")$p.value
   
-  pander(lm_1)
+  summary(lm_1)
 
 ```
 
@@ -272,7 +272,7 @@ First we will generate some data under a null, normal model, with a random alloc
     scale_fill_viridis(guide = FALSE, discrete = TRUE, end = 0.85)
   
 # Regress SBP on the treatment arm  
-  pander(lm(sbp ~ arm, data = data))
+  summary(lm(sbp ~ arm, data = data))
 
 ```
 
@@ -397,9 +397,7 @@ Most of the time people recommend a power of at least 0.8 (more on this later), 
 
 ```
 
-Whoa!
- 
-What just happened? Now if I use p = 0.05 to (correctly) reject the null, my power is `r round(table(cut(results$p_value, c(0, 0.05, 1)))[1] / k * 100, 3)`%, and my type 2 error rate is `r 100 - round(table(cut(results$p_value, c(0, 0.05, 1)))[1] / k * 100, 3)`%. 
+Whoa! What just happened? Now if I use p = 0.05 to (correctly) reject the null, my power is `r round(table(cut(results$p_value, c(0, 0.05, 1)))[1] / k * 100, 3)`%, and my type 2 error rate is `r 100 - round(table(cut(results$p_value, c(0, 0.05, 1)))[1] / k * 100, 3)`%. 
  
 Here is an important point - there is no such thing as **A** study's power. Power is specific to both a study's design, and **AN** effect size. Thus the same study will produce a different power for different effect sizes. In these simulated examples, we **know** what the alternative hypothesis is (effect = -2), while for a real study, there are many plausible alternative hypotheses (i.e. many plausible potential effect sizes) and we can't know which is true, or else we wouldn't need to run the study. 
 

@@ -212,9 +212,9 @@ This means that **IF** there was no treatment effect, **AND** the assumptions un
 
 So what can we do with this p-value? That's where things start to get tricky. At the risk of over-simplifying things, Fisher saw the p-value as a continuous measure of how surprised we should be if the data were truly generated under a mechanism of "no effect". So then a small p-value indicates there might be an effect worth further exploring or looking for in continued experiments. Then, if you were able able to repeat an experiment several times and consistently produce a small p-value, you might finally conclude that your intervention "works". 
 
-Others would use the p-value as a hypothesis test. In the example above, it would be the null hypothesis of $t \le 0$ vs the alternative of $t > 0$. Then you would set some threshold for p (e.g. 5%) for which you would "reject the null". We'll come back to this way of thinking when we discuss power, and type 1 and 2 errors below.    
+Others would use the p-value as a hypothesis test. In the example above, it would be the null hypothesis of t ≤ 0 vs the alternative of t > 0. Then you would set some threshold for p (e.g. 5%) for which you would "reject the null". We'll come back to this way of thinking when we discuss power, and type 1 and 2 errors below.    
 
-In the example above, we only considered our estimate of t with respect to one tail of the sampling distribution of t under the null. This is what we refer to as a one-sided test. However, it usually makes more sense to make it relative to both tails, so that the null is $t = 0$ vs. $t < 0$ or $t > 0$. 
+In the example above, we only considered our estimate of t with respect to one tail of the sampling distribution of t under the null. This is what we refer to as a one-sided test. However, it usually makes more sense to make it relative to both tails, so that the null is t = 0 vs. t < 0 or t > 0. 
 
 
 ```r
@@ -238,24 +238,22 @@ Now this was a fair bit of work just to do a simple t-test. So now let's R do th
 ```r
   t_1 <- t.test(y ~ arm, data = study_df)
 
-  pander(t_1)
+  summary(t_1)
 ```
 
-
--------------------------------------------------------------
- Test statistic    df      P value    Alternative hypothesis 
----------------- ------- ----------- ------------------------
-     -2.347       34.05   0.02487 *         two.sided        
--------------------------------------------------------------
-
-Table: Welch Two Sample t-test: `y` by `arm` (continued below)
-
- 
-----------------------------------------------
- mean in group Control   mean in group Active 
------------------------ ----------------------
-        0.05376                 0.706         
-----------------------------------------------
+```
+##             Length Class  Mode     
+## statistic   1      -none- numeric  
+## parameter   1      -none- numeric  
+## p.value     1      -none- numeric  
+## conf.int    2      -none- numeric  
+## estimate    2      -none- numeric  
+## null.value  1      -none- numeric  
+## stderr      1      -none- numeric  
+## alternative 1      -none- character
+## method      1      -none- character
+## data.name   1      -none- character
+```
 
 ### Side-note: Linear models
 
@@ -269,19 +267,29 @@ For example, the t-test is used when we are interested in a difference in means 
 
   pvalue <- filter(tidy(lm_1), term == "armActive")$p.value
   
-  pander(lm_1)
+  summary(lm_1)
 ```
 
-
---------------------------------------------------------------
-     &nbsp;        Estimate   Std. Error   t value   Pr(>|t|) 
------------------ ---------- ------------ --------- ----------
- **(Intercept)**   0.05376      0.1965     0.2736     0.7859  
-
-  **armActive**     0.6523      0.2779      2.347    0.02423  
---------------------------------------------------------------
-
-Table: Fitting linear model: y ~ arm
+```
+## 
+## Call:
+## lm(formula = y ~ arm, data = study_df)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -1.72700 -0.62341 -0.09427  0.73933  1.93982 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(>|t|)  
+## (Intercept)  0.05376    0.19650   0.274   0.7859  
+## armActive    0.65227    0.27789   2.347   0.0242 *
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.8788 on 38 degrees of freedom
+## Multiple R-squared:  0.1266,	Adjusted R-squared:  0.1036 
+## F-statistic: 5.509 on 1 and 38 DF,  p-value: 0.02423
+```
 
 So here we get a p-value of 0.0242 vs. 0.025 from the t-test. Of course the difference in means, the effect estimate, is exactly the same (-0.65. What's different is the sampling distribution of the two estimators of that effect (t vs the regression coefficient).
 
@@ -321,19 +329,29 @@ First we will generate some data under a null, normal model, with a random alloc
 
 ```r
 # Regress SBP on the treatment arm  
-  pander(lm(sbp ~ arm, data = data))
+  summary(lm(sbp ~ arm, data = data))
 ```
 
-
----------------------------------------------------------------
-     &nbsp;        Estimate   Std. Error   t value   Pr(>|t|)  
------------------ ---------- ------------ --------- -----------
- **(Intercept)**     124        2.579       48.09    5.705e-70 
-
- **armControl**     -2.872      4.027      -0.7131    0.4774   
----------------------------------------------------------------
-
-Table: Fitting linear model: sbp ~ arm
+```
+## 
+## Call:
+## lm(formula = sbp ~ arm, data = data)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -48.069 -13.951   2.747  13.127  42.172 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)  124.014      2.579  48.094   <2e-16 ***
+## armControl    -2.872      4.027  -0.713    0.477    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 19.81 on 98 degrees of freedom
+## Multiple R-squared:  0.005163,	Adjusted R-squared:  -0.004989 
+## F-statistic: 0.5086 on 1 and 98 DF,  p-value: 0.4774
+```
 
 Now let's look at what happens if we repeat this process many times.
 
@@ -460,9 +478,8 @@ Most of the time people recommend a power of at least 0.8 (more on this later), 
 ```
 
 ![](Frequentist_inference_files/figure-html/alt_data_2-1.png)<!-- -->
-Whoa!
- 
-What just happened? Now if I use p = 0.05 to (correctly) reject the null, my power is 68.55%, and my type 2 error rate is 31.45%. 
+
+Whoa! What just happened? Now if I use p = 0.05 to (correctly) reject the null, my power is 68.55%, and my type 2 error rate is 31.45%. 
  
 Here is an important point - there is no such thing as **A** study's power. Power is specific to both a study's design, and **AN** effect size. Thus the same study will produce a different power for different effect sizes. In these simulated examples, we **know** what the alternative hypothesis is (effect = -2), while for a real study, there are many plausible alternative hypotheses (i.e. many plausible potential effect sizes) and we can't know which is true, or else we wouldn't need to run the study. 
 
