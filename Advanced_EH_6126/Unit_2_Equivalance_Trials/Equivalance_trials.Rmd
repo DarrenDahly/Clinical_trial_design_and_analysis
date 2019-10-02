@@ -15,6 +15,11 @@ output:
 
 ```
 
+# Frequentist statistics continued + equivalence vs superiority tests
+
+## Part 4: Confidence intervals
+
+In the previous sections, we discussed how to calculate and use p-values to make inferences.  
 
 # Superiority example
 ```{r}
