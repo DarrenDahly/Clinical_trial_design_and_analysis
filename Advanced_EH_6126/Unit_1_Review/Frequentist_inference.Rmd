@@ -242,7 +242,7 @@ So here we get a p-value of `r signif(pvalue, 3)` vs. `r signif(t_1$p.value, 2)`
 
 ## Part 3. Error control and power
 
-In the example above, we focused mostly on Fisher's interpretations of the  p-value given by a particular set of set of observations as a continuous measure of evidence for/against a null hypothesis/model (though he still viewed being able to repeatedly procure a small p-value as an important step before declaring the existence of an experimental effect). However, this idea was met with great resistance from the very beginning. Much of this resistance came from the Neyman-Pearson (NP) school of thought, whose proponents instead thought that p-values should be used to conduct the binary hypothesis tests we noted above. 
+In the example above, we focused mostly on Fisher's interpretations of the  p-value given by a particular set of set of observations as a continuous measure of evidence for/against a null hypothesis/model (though he still viewed being able to repeatedly procure a small p-value as an important step before declaring the existence of an experimental effect). However, this idea was met with resistance from the very beginning. Much of this resistance came from the Neyman-Pearson (NP) school of thought, whose proponents instead thought that p-values should be used to conduct the binary hypothesis tests we noted above. 
 
 When we choose to use such tests, we are using a relaxed version of the following logic (called [modus tollens](https://en.wikipedia.org/wiki/Modus_tollens)):
 
@@ -383,7 +383,7 @@ So now let's look at the second kind of error, and generate some data with a kno
 
 Now if I use p = 0.05 to reject the null, which is now the correct decision (since I know I simulated data with "an effect"), I will do so `r round(table(cut(results$p_value, c(0, 0.05, 1)))[1] / k * 100, 3)`% of the time. That is my **power**. Alternately, I will accept the null (wrongly) `r 100 - round(table(cut(results$p_value, c(0, 0.05, 1)))[1] / k * 100, 3)`% of the time. That is my type 2 error rate. 
 
-Most of the time people recommend a power of at least 0.8 (more on this later), so clearly this is a very low power. That's because our effect (= -2) is small relative to the variability in the outcome. So we need a bigger effect or a bigger sample to overcome that variability and increase the power. So let's greatly increase the sample size. 
+Most of the time people recommend a power of at least 80% (more on this later), so clearly this is a very low power. That's because our effect (= -2) is small relative to the variability in the outcome. So we need a bigger effect or a bigger sample to overcome that variability and increase the power. So let's greatly increase the sample size. 
 
 ```{r alt_data_2}
 

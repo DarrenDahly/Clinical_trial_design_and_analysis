@@ -5,18 +5,7 @@ output:
     keep_md: true
 ---
 
-```{r setup, include = FALSE}
 
-  knitr::opts_chunk$set(message = FALSE, warning = FALSE)
-
-# Install/load packages
-
-  packs <- c("tidyverse", "knitr", "viridis", "broom", "ggbeeswarm", "TOSTER", 
-             "broom")
-  install.packages(packs[!packs %in% installed.packages()])
-  lapply(packs, library, character.only = TRUE)
-  
-```
 
 # Frequentist statistics continued + equivalence vs superiority tests
 
@@ -28,8 +17,8 @@ To do this, first we take some level of alpha, our acceptable type 1 error rate 
 
 First, let's look at the two-sided p-value from a normal sampling distribution with an effect = 0 and an standard error (SE) = 1 (remember, an SE is just what we call the standard deviation for a sampling distribution).
 
-```{r t_two_sided}
 
+```r
   g1 <- ggplot(data_frame(x = c(-4 , 4)), aes(x = x)) + 
     stat_function(fun = dnorm, args = list(0, 1), 
                   geom = "area", fill = viridis(1), alpha = 0.3) +
@@ -49,15 +38,16 @@ First, let's look at the two-sided p-value from a normal sampling distribution w
     ggtitle(paste0("The proportion of the total area in the darker part of the distribution\n for t is ", signif(2 * pnorm(1.96, 0, 1, lower.tail = FALSE), 3)))
 
   g1
-
 ```
+
+![](Equivalance_trials_files/figure-html/t_two_sided-1.png)<!-- -->
 
 We can thus see the middle 95% of values, which would be our 95% CI. Values falling outside of this range are in the rejection region of the distribution. 
 
 Now, for sampling distributions where we are happy to assume a normal model (this is often true), we can just slide this same range over so that it's centered on our observed effect estimate. So let's see this for an effect = 2. 
 
-```{r shift_to_effect}
 
+```r
   g2 <- g1 +
     stat_function(fun = dnorm, args = list(2, 1), 
                   geom = "area", fill = viridis(1, direction = -1), alpha = 0.3) +
@@ -79,8 +69,9 @@ Now, for sampling distributions where we are happy to assume a normal model (thi
     ggtitle("")
 
   g2
-
 ```
+
+![](Equivalance_trials_files/figure-html/shift_to_effect-1.png)<!-- -->
 
 So now the have the same interval centered on our observed effect = 2 (yellow). 
 
@@ -106,18 +97,19 @@ If we reject both tests, we conclude there is equivalence between the treatments
 
 Let's start with our familiar null = 0 sampling distribution from a normal model with a SE = 1 and a 95% two sided CI. 
 
-```{r start}
 
+```r
 # Get the expected sampling distibution under a null hypotheis of no difference
   
   g1 
-
 ```
+
+![](Equivalance_trials_files/figure-html/start-1.png)<!-- -->
 
 Now let's slide the CI so that it centers on our non-inferiority margin (= 3 in this example).
 
-```{r shift}
 
+```r
   margin <- 3
 
   g2 <- ggplot(data_frame(x = c(-6 , 6)), aes(x = x)) + 
@@ -144,13 +136,14 @@ Now let's slide the CI so that it centers on our non-inferiority margin (= 3 in 
          size = 1)
 
   g2
-
 ```
+
+![](Equivalance_trials_files/figure-html/shift-1.png)<!-- -->
 
 But we aren't interesting in a two sided test of H0: z = 3 vs H_Alt: Z < 3 or Z > 3, but rather we want the one sided test of Z >= 3 vs Z < 3 - our non-inferiority test.
 
-```{r non_inferiority}
 
+```r
   g3 <- ggplot(data_frame(x = c(-6 , 6)), aes(x = x)) + 
     stat_function(fun = dnorm, args = list(0, 1), 
                   geom = "area", fill = viridis(1), alpha = 0.1) +
@@ -172,13 +165,14 @@ But we aren't interesting in a two sided test of H0: z = 3 vs H_Alt: Z < 3 or Z 
                size = 1)
 
   g3
-
 ```
+
+![](Equivalance_trials_files/figure-html/non_inferiority-1.png)<!-- -->
 
 As well as the one sided test of Z <= -3 vs Z > -3 - our non-superiority test.
 
-```{r non_superiority}
 
+```r
   g4 <- g3 +
     stat_function(fun = dnorm, args = list(-margin, 1), 
                   geom = "area", fill = viridis(1, direction = -1), 
@@ -193,15 +187,16 @@ As well as the one sided test of Z <= -3 vs Z > -3 - our non-superiority test.
                size = 1)
 
   g4
-
 ```
+
+![](Equivalance_trials_files/figure-html/non_superiority-1.png)<!-- -->
 
 Based on these two one-sided 97.5% intervals, we can create a two-sided 95% interval as follows: 
 
 First, take each bounded side of the two one-sided intervals. 
 
-```{r new_interval_1}
 
+```r
   g5 <- g4 + 
     geom_segment(x = 1.96 + -margin, xend = -margin,
                  y = 0.1, yend = 0.1, size = 2) +
@@ -209,13 +204,14 @@ First, take each bounded side of the two one-sided intervals.
                  y = 0.1, yend = 0.1, size = 2)
 
   g5
-  
 ```
+
+![](Equivalance_trials_files/figure-html/new_interval_1-1.png)<!-- -->
 
 Then stick them together. 
 
-```{r new_interval_2}
 
+```r
   g6 <- g5 + 
     geom_segment(x = 1.96, xend = 0,
                  y = 0.15, yend = 0.15, size = 2) +
@@ -225,8 +221,9 @@ Then stick them together.
 
 
   g6
-  
 ```
+
+![](Equivalance_trials_files/figure-html/new_interval_2-1.png)<!-- -->
 
 So now I have a 95% CI centered on 0, and if I shifted it so that its upper limit crossed the non-inferiority margin, that would also drag the point estimate into the acceptance (light purple) region of the one-sided test, so we wouldn't be able to declare non-inferiority. Similarly, if I shifted it so that its lower limit crossed the non-superiority margin, that would drag the estimate into the acceptance region (light yellow) of the one-sided non-superiority test.
 
@@ -236,35 +233,65 @@ One final point, here were focused on one-sided tests with alpha = 0.025 (2.5%) 
 
 Here is an example of this in practice. We start with a small trial looking at the effect of fentanyl vs morphine in controlling pain. 
 
-```{r load_data}
 
+```r
   data <- read_csv("data/data.csv")
 
   names(data)
-  
-  length(unique(data$subject)) == nrow(data)
-  
-  table(data$arm)
+```
 
+```
+##  [1] "subject"        "arm"            "a_painscore0"   "b_painscore5"  
+##  [5] "c_painscore10"  "d_painscore15"  "e_painscore20"  "f_painscore30" 
+##  [9] "g_painscore60"  "h_painscore120"
+```
+
+```r
+  length(unique(data$subject)) == nrow(data)
+```
+
+```
+## [1] TRUE
+```
+
+```r
+  table(data$arm)
+```
+
+```
+## 
+## Fentanyl Morphine 
+##       15       16
 ```
 
 We can see the dataset contains a unique id for 31 observations, information about which arm the participant was in, and a series of pain scores measured over time. 
 
 The first thing I usually do with a dataset is to plot the key variables, so let's have a look at these pain scores over time. To do this, first I want to "reshape" the dataset from a wide format (1 row with many columns per observations) to a long format (many rows - one for each time point per person).
 
-```{r reshape_long}
 
+```r
   pain <- gather(data, time, pain, a_painscore0:h_painscore120) %>%
     mutate(time = as.numeric(gsub("_", "", gsub("[[:alpha:]]", "", time))))
 
   head(pain)
+```
 
+```
+## # A tibble: 6 x 4
+##   subject arm       time  pain
+##     <dbl> <chr>    <dbl> <dbl>
+## 1     101 Morphine     0    10
+## 2     102 Fentanyl     0     9
+## 3     103 Morphine     0     9
+## 4     104 Fentanyl     0     9
+## 5     105 Morphine     0     9
+## 6     106 Morphine     0     8
 ```
 
 Next I want to calculate some summary statistics, and then plot these alongside the data. 
 
-```{r plot_raw_pain_data}
 
+```r
 # Summary stats
   pain_df <- group_by(pain, arm, time) %>%
     summarise(median = quantile(pain, 0.5),
@@ -299,19 +326,22 @@ Next I want to calculate some summary statistics, and then plot these alongside 
     scale_x_continuous(breaks = c(0, 5, 10, 15, 20, 30, 60, 120)) +
     theme(panel.background = element_rect(fill = "grey")) +
     coord_cartesian(ylim = c(0, 10))
+```
 
+![](Equivalance_trials_files/figure-html/plot_raw_pain_data-1.png)<!-- -->
+
+```r
 # Save a pdf version  
   ggsave("plots/figure_1.pdf", height = 19.05, width = 33.86,
          units = "cm", scale = 0.8)
-  
 ```
 
 ### TOST for the primary outcome (10 minutes)
 
 Next we want to use the TOSTER package to carry out our two one-sided tests that we will use to evaluate if fentanyl is non-inferior to morphine. This means that we will accept that it's a little worse (e.g. is associated with higher pain scores), but not too much worse (not more than +0.36 SDs of pain worse - this is the margin).  
 
-```{r tost_primary}
 
+```r
   m1 <- mean(filter(data, arm == "Morphine")$c_painscore10, na.rm = TRUE)
   m2 <- mean(filter(data, arm == "Fentanyl")$c_painscore10, na.rm = TRUE)
   sd1 <-  sd(filter(data, arm == "Morphine")$c_painscore10, na.rm = TRUE)
@@ -325,15 +355,45 @@ Next we want to use the TOSTER package to carry out our two one-sided tests that
     var.equal = FALSE,
     plot = TRUE
     )
+```
 
+![](Equivalance_trials_files/figure-html/tost_primary-1.png)<!-- -->
+
+```
+## TOST results:
+## t-value lower bound: 3.36 	p-value lower bound: 0.001
+## t-value upper bound: 3.36 	p-value upper bound: 0.999
+## degrees of freedom : 28.91
+## 
+## Equivalence bounds (Cohen's d):
+## low eqbound: -0.36 
+## high eqbound: -0.36
+## 
+## Equivalence bounds (raw scores):
+## low eqbound: -0.5952 
+## high eqbound: -0.5952
+## 
+## TOST confidence interval:
+## lower bound 90% CI: 0.392
+## upper bound 90% CI:  2.408
+## 
+## NHST confidence interval:
+## lower bound 95% CI: 0.187
+## upper bound 95% CI:  2.613
+## 
+## Equivalence Test Result:
+## The equivalence test was non-significant, t(28.91) = 3.364, p = 0.999, given equivalence bounds of -0.595 and -0.595 (on a raw scale) and an alpha of 0.05.
+## Null Hypothesis Test Result:
+## The null hypothesis test was significant, t(28.91) = 2.361, p = 0.0252, given an alpha of 0.05.
+## Based on the equivalence test and the null-hypothesis test combined, we can conclude that the observed effect is statistically different from zero and statistically not equivalent to zero.
 ```
 
 # Two sample t-tests with unequal variances
 
 For our own learning, let's see if we can replicate what the TOSTER package does, and apply it to every time point. Below we will basically run 2 t-tests comparing the mean pain score between arms, at each time point. For one of these tests, we will set alpha to 0.05 (for a 95% CI), and for the other, we will set alpha to 0.10 (for a 90% CI, which is our two one-sided tests, each with alpha = 0.05).
 
-```{r calculate_mean_diffs}
 
+```r
 # Function for running and reporting t-tests
   ttest_res <- function(x, data, level, ...){
     form <- as.formula(paste0(x, " ~ arm"))
@@ -364,13 +424,12 @@ For our own learning, let's see if we can replicate what the TOSTER package does
   }
   
   ttests_90 <- do.call(bind_rows, ttests_90)
-
 ```
 
 Now let's plot the results. 
 
-```{r plot_mean_diffs}
 
+```r
   ggplot(ttests_95, aes(x = time, y = estimate, ymax = conf.high, 
                         ymin = conf.low)) +
     geom_rect(aes(ymin = 0, ymax = Inf, xmin = -Inf, xmax = Inf),
@@ -391,17 +450,19 @@ Now let's plot the results.
     theme(panel.background = element_rect(fill = "grey")) +
     annotate("text", y = -3.4, x = 100, label = "Favours Fentanyl") +
     annotate("text", y = 1.2, x = 100, label = "Favours Morphine") 
-  
+```
+
+![](Equivalance_trials_files/figure-html/plot_mean_diffs-1.png)<!-- -->
+
+```r
    ggsave("plots/figure_2.pdf", height = 19.05, width = 33.86,
          units = "cm", scale = 0.8)
-
-
 ```
 
 And finally, a table of results. 
 
-```{r results table}
 
+```r
 # Take the long pain data, convert to wide, keep mean, n, sd by arm and time
   pain_df_wide <- spread(pain_df, type, pain) %>% 
     select(-ll, -ul, -median, -upperq, -lowerq, -se) %>%
@@ -437,10 +498,20 @@ And finally, a table of results.
       ), 
     align = c("l", rep("c", ncol(table_data) - 1))
   )
-  
-
-  
 ```
+
+
+
+Time (+min)    N     Mean     SD     N     Mean     SD     Mean Difference (95%CI) 
+------------  ----  ------  ------  ----  ------  ------  -------------------------
+0              15    8.20    1.26    16    8.38    0.96     -0.18 (-1.01 to 0.66)  
+5              15    6.47    1.92    16    7.00    1.67     -0.53 (-1.86 to 0.8)   
+10             15    4.60    1.55    16    6.00    1.75     -1.4 (-2.61 to -0.19)  
+15             15    3.67    1.91    16    5.50    2.25     -1.83 (-3.37 to -0.3)  
+20             15    3.20    1.93    16    5.06    2.17    -1.86 (-3.37 to -0.35)  
+30             15    2.53    1.85    16    4.81    2.29     -2.28 (-3.8 to -0.76)  
+60             15    1.93    1.49    16    3.81    2.37    -1.88 (-3.33 to -0.43)  
+120            15    1.67    1.72    16    3.31    1.96      -1.65 (-3 to -0.29)   
 
 ### Challenge
 
