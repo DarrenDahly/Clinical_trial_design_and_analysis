@@ -139,7 +139,7 @@ Now we are going to simulate a clinical trial with a known effect of the interve
 # (which is included in the tidyverse family of packages).  
 ```
 
-Now we will pretend that we don't know what the true effect of the treatment is (0.5). The difference in means between the two arms in this sample is 0.65. This of course isn't exactly 0.5, since the tx effect is added to an variable outcome measured in a sample. Thus some sampling variability should be expected.  
+Now we will pretend that we don't know what the true effect of the treatment is (0.5). The difference in means between the two arms in this sample is 0.65. This of course isn't exactly 0.5, since the tx effect is added to a variable outcome that is measured in a random sample. Thus some sampling variability should be expected.  
 
 The actual test statistic we will use is called Student's t. It is a ratio of this difference in means to the standard error (which is what we, somewhat confusingly, call the standard deviation of a sampling distribution). You can think of it as a "signal to noise ratio".  
 
@@ -238,21 +238,21 @@ Now this was a fair bit of work just to do a simple t-test. So now let's R do th
 ```r
   t_1 <- t.test(y ~ arm, data = study_df)
 
-  summary(t_1)
+  t_1
 ```
 
 ```
-##             Length Class  Mode     
-## statistic   1      -none- numeric  
-## parameter   1      -none- numeric  
-## p.value     1      -none- numeric  
-## conf.int    2      -none- numeric  
-## estimate    2      -none- numeric  
-## null.value  1      -none- numeric  
-## stderr      1      -none- numeric  
-## alternative 1      -none- character
-## method      1      -none- character
-## data.name   1      -none- character
+## 
+## 	Welch Two Sample t-test
+## 
+## data:  y by arm
+## t = -2.3472, df = 34.049, p-value = 0.02487
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  -1.21698902 -0.08755436
+## sample estimates:
+## mean in group Control  mean in group Active 
+##            0.05376083            0.70603252
 ```
 
 ### Side-note: Linear models
@@ -291,11 +291,11 @@ For example, the t-test is used when we are interested in a difference in means 
 ## F-statistic: 5.509 on 1 and 38 DF,  p-value: 0.02423
 ```
 
-So here we get a p-value of 0.0242 vs. 0.025 from the t-test. Of course the difference in means, the effect estimate, is exactly the same (-0.65. What's different is the sampling distribution of the two estimators of that effect (t vs the regression coefficient).
+So here we get a p-value of 0.0242 vs. 0.025 from the t-test. Of course the difference in means, the effect estimate, is exactly the same (-0.65). It's the sampling distributions of the two estimators of that effect (t vs the regression coefficient) that are different.
 
 ## Part 3. Error control and power
 
-In the example above, we focused mostly on Fisher's interpretations of the  p-value given by a particular set of set of observations as a continuous measure of evidence for/against a null hypothesis/model (though he still viewed being able to repeatedly procure a small p-value as an important step before declaring the existence of an experimental effect). However, this idea was met with great resistance from the very beginning. Much of this resistance came from the Neyman-Pearson (NP) school of thought, whose proponents instead thought that p-values should be used to conduct the binary hypothesis tests we noted above. 
+In the example above, we focused mostly on Fisher's interpretations of the  p-value given by a particular set of set of observations as a continuous measure of evidence for/against a null hypothesis/model (though he still viewed being able to repeatedly procure a small p-value as an important step before declaring the existence of an experimental effect). However, this idea was met with resistance from the very beginning. Much of this resistance came from the Neyman-Pearson (NP) school of thought, whose proponents instead thought that p-values should be used to conduct the binary hypothesis tests we noted above. 
 
 When we choose to use such tests, we are using a relaxed version of the following logic (called [modus tollens](https://en.wikipedia.org/wiki/Modus_tollens)):
 
@@ -384,7 +384,7 @@ Now let's look at what happens if we repeat this process many times.
 
 ![](Frequentist_inference_files/figure-html/null_data_repeat-1.png)<!-- -->
 
-As some of you might have expected, about 5% of the p-values fall below the nominal 5% level (0.06)
+As some of you might have expected, about 5% of the p-values fall below the nominal 5% level (6% in this set of simulations)
 
 Just for fun, what will happen to the distribution of p-values if I decrease the sample size of the individual replicates?
 
@@ -401,7 +401,7 @@ Just for fun, what will happen to the distribution of p-values if I decrease the
 
 ![](Frequentist_inference_files/figure-html/p_distribution_null_1-1.png)<!-- -->
 
-Again, about 5% of the p-values fall below the nominal 5% level (0.044)
+Again, about 5% of the p-values fall below the nominal 5% level (4.4% - the difference is just simulation error - if we ran more simulations, this would be 5% for sure)
 
 And if I increase the sample size?
 
@@ -418,7 +418,7 @@ And if I increase the sample size?
 
 ![](Frequentist_inference_files/figure-html/p_distribution_null_2-1.png)<!-- -->
 
-The same result (0.048). To put a finer point on this, **when the data are indeed generated by a null model**, the distribution of p-values is constant; and because p is based on a sampling distribution, which is in turn partly determined by the sample size (via the standard error), then 5% of p values will be below the 5% threshold, regardless of sample size. 
+The same result (4.8%). To put a finer point on this, **when the data are indeed generated by a null model**, the distribution of p-values is constant; and because p is based on a sampling distribution, which is in turn partly determined by the sample size (via the standard error), then 5% of p values will be below the 5% threshold, regardless of sample size. 
 
 The other important addition from the NP view is the introduction of some alternative hypothesis, so that when we reject the null (based on a small p-value) then we are implicitly accepting some alternative. Thus we can restate the two types of possible error we noted above: 
 
@@ -464,7 +464,7 @@ So now let's look at the second kind of error, and generate some data with a kno
 
 Now if I use p = 0.05 to reject the null, which is now the correct decision (since I know I simulated data with "an effect"), I will do so 10.35% of the time. That is my **power**. Alternately, I will accept the null (wrongly) 89.65% of the time. That is my type 2 error rate. 
 
-Most of the time people recommend a power of at least 0.8 (more on this later), so clearly this is a very low power. That's because our effect (= -2) is small relative to the variability in the outcome. So we need a bigger effect or a bigger sample to overcome that variability and increase the power. So let's greatly increase the sample size. 
+Most of the time people recommend a power of at least 80% (more on this later), so clearly this is a very low power. That's because our effect (= -2) is small relative to the variability in the outcome. So we need a bigger effect or a bigger sample to overcome that variability and increase the power. So let's greatly increase the sample size. 
 
 
 ```r
