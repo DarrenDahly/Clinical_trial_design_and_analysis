@@ -1,0 +1,20 @@
+---
+title: "Cross-over Trials"
+output: 
+  html_document:
+    keep_md: true
+---
+
+```{r setup, include = FALSE}
+
+  knitr::opts_chunk$set(message = FALSE, warning = FALSE)
+
+# Install/load packages
+
+  packs <- c("tidyverse", "knitr", "viridis", "broom", "ggbeeswarm", "TOSTER", 
+             "broom")
+  install.packages(packs[!packs %in% installed.packages()])
+  lapply(packs, library, character.only = TRUE)
+  
+```
+
