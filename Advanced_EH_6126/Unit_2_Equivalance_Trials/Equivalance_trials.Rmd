@@ -11,8 +11,7 @@ output:
 
 # Install/load packages
 
-  packs <- c("tidyverse", "knitr", "viridis", "broom", "ggbeeswarm", "TOSTER", 
-             "broom")
+  packs <- c("tidyverse", "knitr", "viridis", "broom", "ggbeeswarm", "TOSTER")
   install.packages(packs[!packs %in% installed.packages()])
   lapply(packs, library, character.only = TRUE)
   
