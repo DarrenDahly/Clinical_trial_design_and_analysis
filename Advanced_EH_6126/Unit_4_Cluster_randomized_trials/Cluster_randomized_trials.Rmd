@@ -1,0 +1,19 @@
+---
+title: "Cluster randomized trials"
+output: 
+  html_document:
+    keep_md: true
+---
+
+```{r setup, include = FALSE}
+
+  knitr::opts_chunk$set(message = FALSE, warning = FALSE)
+
+# Install/load packages
+
+  packs <- c("tidyverse", "knitr", "viridis", "broom", "pwr")
+  install.packages(packs[!packs %in% installed.packages()])
+  lapply(packs, library, character.only = TRUE)
+
+```
+

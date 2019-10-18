@@ -542,5 +542,5 @@ I want to point out one more thing, which is the distribution of p-values that f
 
 ![](Frequentist_inference_files/figure-html/alt_data_le_05-1.png)<!-- -->
 
-So how many of those p-values are close to 0.05? Very few! What does this mean? It means that in high power tests where the null is true, the distribution of p-values is heavily skewed towards very small values, values much smaller than 0.05. This is why many people are skeptical of papers and bodies of literature that report many "just significant" p-values, as it suggests publication bias and p-hacking. 
+So how many of those p-values are close to 0.05? Very few! What does this mean? It means that when some alternative effect is true and the trial is very well powered to detect that effect, the distribution of p-values is heavily skewed towards very small values, values much smaller than 0.05. This is why many people are skeptical of papers and bodies of literature that report many "just significant" p-values, as it suggests publication bias and p-hacking. 
 

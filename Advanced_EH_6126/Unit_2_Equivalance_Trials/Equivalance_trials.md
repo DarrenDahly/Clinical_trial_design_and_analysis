@@ -517,3 +517,4 @@ Time (+min)    N     Mean     SD     N     Mean     SD     Mean Difference (95%C
 ### Challenge
 
 Try to use what you've seen in the last two tutorials to 1) simulate some data (hint: see sim_t_test_data from the last tutorial) from a two arm parallel trial with n = 40 where the effect of the new treatment on a normally distributed outcome (mean = 0, sd = 1) is 0.3 SDs worse than the standard treatment (i.e. higher scores is bad). Then test for non-inferiority using the TOST procedure based on a t-test with unequal variances and a NI margin of 0.4 SDs (hint: see tost_primary above). Then repeat your simulation many times to explore it's performance. Finally, increase the sample size to 100 and repeat the exercise. 
+
