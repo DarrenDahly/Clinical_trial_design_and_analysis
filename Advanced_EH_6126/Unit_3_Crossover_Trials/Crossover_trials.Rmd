@@ -9,7 +9,7 @@ output:
 
 For this tutorial we will be working with a dataset from a standard 2 period, 2 intervention AB:BA crossover trial of a treatment aimed at lowering blood pressure in people who usually have mildly-evaluated values. In other words, each person in the trial gets exposured to each intervention (active vs placebo), but in one of two possible sequences (active first vs placebo first). 
 
-As usuall, we will first load the neccessary packages and bring in the dataset. 
+As usual, we will first load the neccessary packages and bring in the dataset. 
 
 ```{r setup, include = FALSE}
 
@@ -35,9 +35,11 @@ Have a look at the dataset.
 
 ```
 
-```{r inspect_data_2}
 
-# view(dfSummary(data))
+```{r dfsummary_table1, eval = knitr::opts_knit$get("rmarkdown.pandoc.to") == "html"}
+
+  print(summarytools::dfSummary(data, style = "grid", plain.ascii = FALSE), 
+    method = "render")
 
 ```
 
